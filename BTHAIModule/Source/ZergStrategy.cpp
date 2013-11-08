@@ -36,4 +36,10 @@ void ZergStrategy::computeActions()
 	int gas = Broodwar->self()->gas();
 
 	//Implement stuff here
+	
+	//TODO:
+		//buildorder
+		//squads
+		//upgrades
+		//techs
 }
