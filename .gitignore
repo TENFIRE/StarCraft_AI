@@ -155,3 +155,6 @@ BTHAIModule/BTHAIModule.vcproj.ERIK.Erik.user
 BTHAIModule/BTHAIModule.vcproj.jhg-asus.jhg.user
 BTHAIModule/BTHAIModule.vcxproj
 BTHAIModule/BTHAIModule.vcxproj.filters
+BTHAIModule/Release/
+BTHAIModule/Debug/
+AIModuleLoader/
