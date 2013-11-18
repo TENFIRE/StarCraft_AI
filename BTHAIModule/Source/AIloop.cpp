@@ -11,6 +11,7 @@
 #include "Constructor.h"
 #include "StrategySelector.h"
 
+float myspeed = 0;
 
 AIloop::AIloop()
 {
@@ -77,6 +78,23 @@ void AIloop::computeActions()
 			return;
 		}
 	}	
+
+	if (GetAsyncKeyState(VK_ADD) & 0x8000) {
+		Broodwar->setLocalSpeed(0);
+		Broodwar->printf("speed: 0");
+	}
+	else if (GetAsyncKeyState(VK_SUBTRACT) & 0x8000) {
+		Broodwar->setLocalSpeed(12);
+		Broodwar->printf("speed: 12");
+	}
+	else if (GetAsyncKeyState(VK_MULTIPLY) & 0x8000) {
+		Broodwar->setLocalSpeed(25);
+		Broodwar->printf("speed: 25");
+	}
+	else if (GetAsyncKeyState(VK_DIVIDE) & 0x8000) {
+		Broodwar->setLocalSpeed(50);
+		Broodwar->printf("speed: 50");
+	}
 
 	Profiler::getInstance()->start("OnFrame_AgentManager");
 	AgentManager::getInstance()->computeActions();
