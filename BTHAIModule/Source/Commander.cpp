@@ -630,7 +630,9 @@ TilePosition Commander::findChokePoint()
 	if (storedPos.x() != -1) return storedPos;
 
 	double bestPrio = -1;
-	Chokepoint* bestChoke = NULL;
+	Chokepoint*		bestChoke		=	NULL;
+	Chokepoint*		wrongChoke		=	NULL;
+	set<BWTA::Region*>::const_iterator	regionToSearch;
 	
 	for(set<BWTA::Region*>::const_iterator i=getRegions().begin();i!=getRegions().end();i++)
 	{
@@ -643,13 +645,36 @@ TilePosition Commander::findChokePoint()
 					double cPrio = getChokepointPrio(TilePosition((*c)->getCenter()));
 					if (cPrio > bestPrio)
 					{
-						bestPrio = cPrio;
-						bestChoke = (*c);
+						bestPrio		=	cPrio;
+						wrongChoke		=	(*c);
+						regionToSearch	=	i;
 					}
 				}
 			}
 		}
 	}
+
+	bestPrio	=	-1;
+	for(set<BWTA::Region*>::const_iterator i=getRegions().begin();i!=getRegions().end();i++)
+	{
+		if (isOccupied((*i)))
+		{
+			for(set<Chokepoint*>::const_iterator c=(*i)->getChokepoints().begin();c!=(*i)->getChokepoints().end();c++)
+			{
+				if( wrongChoke != (*c) )
+					if ( isEdgeChokepoint((*c)) )
+					{
+						double	cPrio	=	getChokepointPrio( TilePosition((*c)->getCenter()) );
+						if (cPrio > bestPrio)
+						{
+							bestPrio = cPrio;
+							bestChoke = (*c);
+						}
+					}
+			}
+		}
+	}
+
 
 	TilePosition guardPos = Broodwar->self()->getStartLocation();
 	if (bestChoke != NULL)
