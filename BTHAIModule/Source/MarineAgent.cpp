@@ -16,5 +16,10 @@ MarineAgent::MarineAgent(Unit* mUnit)
 
 void MarineAgent::computeActions()
 {
+	//	Stim pack logic
+	if( isAttacking() && unit->getStimTimer() <= 0 )
+		if( unit->getHitPoints() > 20 )
+			unit->useTech( TechTypes::Stim_Packs );
+
 	NavigationAgent::getInstance()->computeMove(this, goal, false);
 }
