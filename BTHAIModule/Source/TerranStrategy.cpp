@@ -4,7 +4,6 @@
 #include "ExplorationSquad.h"
 #include "BuildingPlacer.h"
 #include "ExplorationManager.h"
-#include "MarineSquad.h"
 
 
 Squad*	rushSquad;
@@ -38,7 +37,7 @@ TerranStrategy::TerranStrategy()
 
 
 	
-	rushSquad = new MarineSquad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
+	rushSquad = new Squad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
 	rushSquad->addSetup( UnitTypes::Terran_Marine, 10 );
 	rushSquad->addSetup( UnitTypes::Terran_Medic, 10 );
 	rushSquad->setRequired( true );
