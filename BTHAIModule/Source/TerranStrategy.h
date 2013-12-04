@@ -13,10 +13,9 @@ using namespace std;
  * Implement your Terran strategy here.
  */
 class TerranStrategy : public Commander {
-
 private:
 	Squad* mainSquad;
-	
+
 public:
 	TerranStrategy();
 
@@ -31,6 +30,8 @@ public:
 	{
 		return "TerranStrategy";
 	}
+
+	static	vector<Unit*>	CommandCenters;
 };
 
 #endif

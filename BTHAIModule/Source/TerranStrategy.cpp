@@ -5,8 +5,7 @@
 #include "BuildingPlacer.h"
 #include "ExplorationManager.h"
 
-
-Squad*	rushSquad;
+vector<Unit*>	TerranStrategy::CommandCenters	=	vector<Unit*>();
 TerranStrategy::TerranStrategy()
 {
 	// Supply Depots
@@ -37,13 +36,13 @@ TerranStrategy::TerranStrategy()
 
 
 	
-	rushSquad = new Squad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
-	rushSquad->addSetup( UnitTypes::Terran_Marine, 10 );
-	rushSquad->addSetup( UnitTypes::Terran_Medic, 10 );
-	rushSquad->setRequired( true );
-	rushSquad->setBuildup( false );
-	rushSquad->setGoal( findChokePoint() );
-	squads.push_back( rushSquad );
+	mainSquad = new Squad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
+	mainSquad->addSetup( UnitTypes::Terran_Marine, 10 );
+	mainSquad->addSetup( UnitTypes::Terran_Medic, 10 );
+	mainSquad->setRequired( true );
+	mainSquad->setBuildup( false );
+	mainSquad->setGoal( findChokePoint() );
+	squads.push_back( mainSquad );
 
 
 
@@ -70,4 +69,6 @@ void TerranStrategy::computeActions()
 	int gas = Broodwar->self()->gas();
 
 	//Implement stuff here
+	if(CommandCenters.size() > 0)
+		Broodwar->sendText( "OFMG WE HAVE A UNIT IN OUR LIST!!!" );
 }

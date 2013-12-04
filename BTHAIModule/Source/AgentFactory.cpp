@@ -4,6 +4,7 @@
 #include "UnitAgent.h"
 #include "Commander.h"
 #include "TransportAgent.h"
+#include "TerranStrategy.h"
 
 /** Terran agents */
 #include "CommandCenterAgent.h"
@@ -210,6 +211,10 @@ BaseAgent* AgentFactory::createTerranAgent(Unit* unit)
 		//Add agents for special buildings here
 		if (isOfType(unit, UnitTypes::Terran_Command_Center))
 		{
+			// Since there is no easy(and performance efficient) way 
+			// to get the command centers we might as well just hook 
+			// the fetch up here. (Add it to the list)
+			TerranStrategy::CommandCenters.push_back( unit );
 			return new CommandCenterAgent(unit);
 		}
 		else if (isOfType(unit, UnitTypes::Terran_Comsat_Station))
