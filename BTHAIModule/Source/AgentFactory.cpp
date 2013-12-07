@@ -219,6 +219,7 @@ BaseAgent* AgentFactory::createTerranAgent(Unit* unit)
 		}
 		else if (isOfType(unit, UnitTypes::Terran_Comsat_Station))
 		{
+			TerranStrategy::ComsatStations.push_back( unit );
 			return new ComsatAgent(unit);
 		}
 		else if (isOfType(unit, UnitTypes::Terran_Refinery))
