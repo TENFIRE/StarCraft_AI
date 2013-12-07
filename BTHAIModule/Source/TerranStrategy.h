@@ -15,6 +15,10 @@ using namespace std;
 class TerranStrategy : public Commander {
 private:
 	Squad* mainSquad;
+	vector<Position>	positionsToScan;
+
+	void		addPossibleScanLocations( void );
+	Position	getRandomScanLocation( void );
 
 public:
 	TerranStrategy();
@@ -32,6 +36,7 @@ public:
 	}
 
 	static	vector<Unit*>	CommandCenters;
+	static	vector<Unit*>	ComsatStations;
 };
 
 #endif
