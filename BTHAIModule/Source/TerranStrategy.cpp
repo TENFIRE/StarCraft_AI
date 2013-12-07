@@ -4,11 +4,14 @@
 #include "ExplorationSquad.h"
 #include "BuildingPlacer.h"
 #include "ExplorationManager.h"
+#include "RushSquad.h"
 #include "ComsatAgent.h"
 #include "CommandCenterAgent.h"
 
+
 vector<Unit*>	TerranStrategy::CommandCenters	=	vector<Unit*>();
 vector<Unit*>	TerranStrategy::ComsatStations	=	vector<Unit*>();
+
 
 TerranStrategy::TerranStrategy()
 {
@@ -25,6 +28,7 @@ TerranStrategy::TerranStrategy()
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 60));
 
 	//	Barracks
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 8));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 10));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 12));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 14));
@@ -39,17 +43,18 @@ TerranStrategy::TerranStrategy()
 	buildplan.push_back(BuildplanEntry(TechTypes::Stim_Packs, 30));
 
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 35));
-
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Bunker, 10));
 
 	
-	mainSquad = new Squad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
-	mainSquad->addSetup( UnitTypes::Terran_Marine, 10 );
-	mainSquad->addSetup( UnitTypes::Terran_Medic, 10 );
-	mainSquad->setRequired( true );
-	mainSquad->setBuildup( false );
-	mainSquad->setGoal( findChokePoint() );
-	squads.push_back( mainSquad );
-
+	RushSquad*	tSquad;
+	tSquad = new RushSquad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
+	tSquad->addSetup( UnitTypes::Terran_Marine, 10 );
+	tSquad->setRequired( true );
+	tSquad->setBuildup( false );
+	tSquad->setGoal( findChokePoint() );
+	tSquad->setBunkerMode( true );
+	squads.push_back( tSquad );
+	
 	positionsToScan	=	vector<Position>();
 	addPossibleScanLocations();
 
