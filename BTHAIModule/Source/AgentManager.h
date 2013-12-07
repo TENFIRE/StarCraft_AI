@@ -2,7 +2,7 @@
 #define __AGENTMANAGER_H__
 
 #include "BaseAgent.h"
-using namespace BWAPI;
+;using namespace BWAPI;
 using namespace std;
 
 /** The AgentManager class is a container that holds a list of all active agents in the game. Each unit, worker, building or
