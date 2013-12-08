@@ -1108,6 +1108,8 @@ void Commander::printInfo()
 
 int Commander::addBunkerSquad()
 {
+
+	/*
 	Squad* bSquad = new Squad(100 + AgentManager::getInstance()->countNoUnits(UnitTypes::Terran_Bunker), Squad::BUNKER, "BunkerSquad", 5);
 	bSquad->addSetup(UnitTypes::Terran_Marine, 4);
 	squads.push_back(bSquad);
@@ -1136,7 +1138,7 @@ int Commander::addBunkerSquad()
 				}
 			}
 		}
-	}
+	}*/
 
-	return bSquad->getID();
+	return 0;
 }
