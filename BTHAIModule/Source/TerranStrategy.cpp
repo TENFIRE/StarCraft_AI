@@ -56,7 +56,7 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	tSquad->setBunkerMode( true );
 	squads.push_back( tSquad );
 	
-	enemyLocationsFromScans	=	vector<Position>();
+	enemyLocationsFromScans	=	vector<LocationData>();
 	positionsToScan			=	vector<Position>();
 	addPossibleScanLocations();
 
@@ -114,14 +114,19 @@ Position TerranStrategy::getNextScanPosition()
 	return basePos;
 }
 
-void TerranStrategy::addEnemyLocation( Position P )
+void TerranStrategy::addEnemyLocation( Position P, int Factor )
 {
 	bool	isAdded			=	false;
 	float	similiarRange	=	1000.0f;
 	for( int i = 0; i < enemyLocationsFromScans.size(); ++i )
 	{
-		if( P.getDistance( enemyLocationsFromScans[i] ) < similiarRange )
+		LocationData	lData	=	enemyLocationsFromScans[i];
+		if( P.getDistance( lData.Location ) < similiarRange )
 		{
+			//	See if the current position should be updated
+			if( lData.Attractiveness < Factor )
+				enemyLocationsFromScans[i].Attractiveness	=	Factor;
+
 			isAdded	=	true;
 			break;
 		}
@@ -130,8 +135,12 @@ void TerranStrategy::addEnemyLocation( Position P )
 	if( isAdded )
 		return;
 
-	enemyLocationsFromScans.push_back( P );
-	Broodwar->sendText( "Intresting location added <%i, %i>.", P.x(), P.y() );
+	LocationData	tData;
+	tData.Location			=	P;
+	tData.Attractiveness	=	Factor;
+	enemyLocationsFromScans.push_back( tData );
+
+	Broodwar->sendText( "Intresting location added <%i, %i> with a factor %i.", P.x(), P.y(), Factor );
 }
 
 void TerranStrategy::computeActions()
@@ -183,6 +192,7 @@ void TerranStrategy::computeActions()
 				//	performance effiencent but it was the only
 				//	way I found that would actually find units...
 				//	All others either returned 0, or only neutrals.
+				int	numberOfUnits	=	0;
 				for(set<Unit*>::const_iterator i=Broodwar->getAllUnits().begin();i!=Broodwar->getAllUnits().end();i++)
 				{
 					Unit*	tUnit	=	(*i);
@@ -193,13 +203,13 @@ void TerranStrategy::computeActions()
 					//	(sweepRadius is just a approximation)
 					if( tUnit->getPlayer()->isEnemy( Broodwar->self() ) )
 						if( tUnit->getPosition().getDistance( basePos ) < sweepRadius )
-						{
-							//	Enemies near the location
-							//	add it and break the unit iteration
-							addEnemyLocation( basePos );
-							break;
-						}
+							++numberOfUnits;
 				}
+
+				//	If units are within area, add it
+				if( numberOfUnits != 0 )
+					addEnemyLocation( basePos, numberOfUnits );
+
 			}
 		}
 	}
