@@ -16,9 +16,11 @@ class TerranStrategy : public Commander {
 private:
 	Squad* mainSquad;
 	vector<Position>	positionsToScan;
+	vector<Position>	enemyLocationsFromScans;
 
+	void		addEnemyLocation( Position P );
 	void		addPossibleScanLocations( void );
-	Position	getRandomScanLocation( void );
+	Position	getNextScanPosition( void );
 
 public:
 	TerranStrategy();

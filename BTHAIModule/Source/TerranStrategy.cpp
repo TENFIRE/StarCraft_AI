@@ -8,13 +8,13 @@
 #include "ComsatAgent.h"
 #include "CommandCenterAgent.h"
 
-
 vector<Unit*>	TerranStrategy::CommandCenters	=	vector<Unit*>();
 vector<Unit*>	TerranStrategy::ComsatStations	=	vector<Unit*>();
 
 
 TerranStrategy::TerranStrategy()
 {
+Broodwar->enableFlag( Flag::CompleteMapInformation );
 	// Supply Depots
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 9));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 11));
@@ -39,10 +39,11 @@ TerranStrategy::TerranStrategy()
 	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Weapons, 22));
 	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Armor, 24));
 
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Academy, 28));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Academy, 25));
 	buildplan.push_back(BuildplanEntry(TechTypes::Stim_Packs, 30));
 
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 35));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 28));
+
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Bunker, 10));
 
 	
@@ -55,7 +56,8 @@ TerranStrategy::TerranStrategy()
 	tSquad->setBunkerMode( true );
 	squads.push_back( tSquad );
 	
-	positionsToScan	=	vector<Position>();
+	enemyLocationsFromScans	=	vector<Position>();
+	positionsToScan			=	vector<Position>();
 	addPossibleScanLocations();
 
 	noWorkers = 18;
@@ -87,19 +89,49 @@ void TerranStrategy::addPossibleScanLocations()
 	}
 }
 
-Position TerranStrategy::getRandomScanLocation()
+Position TerranStrategy::getNextScanPosition()
 {
 	if( positionsToScan.size() == 0 )
 		return Position( -1, -1 );
 
-	//	Randomize a location from the list
-	int			tempIndex	=	rand() % (positionsToScan.size() - 1);
-	Position	basePos		=	positionsToScan[ tempIndex ];
+	float		furtherstBase	=	0.0f;
+	Position	baseLocation	=	getStartLocation( Broodwar->self() )->getPosition();	
+	int			positionIndex	=	0;
+	for( int i = 0; i < positionsToScan.size(); ++i )
+	{
+		float	tDistance	=	baseLocation.getDistance( positionsToScan[i] );
+		if( tDistance > furtherstBase )
+		{
+			positionIndex	=	i;
+			furtherstBase	=	tDistance;
+		}
+	}
+	Position	basePos		=	positionsToScan[ positionIndex ];
 
 	//	Remove the location from the list
-	positionsToScan.erase( positionsToScan.begin() + tempIndex );
+	positionsToScan.erase( positionsToScan.begin() + positionIndex );
 
 	return basePos;
+}
+
+void TerranStrategy::addEnemyLocation( Position P )
+{
+	bool	isAdded			=	false;
+	float	similiarRange	=	1000.0f;
+	for( int i = 0; i < enemyLocationsFromScans.size(); ++i )
+	{
+		if( P.getDistance( enemyLocationsFromScans[i] ) < similiarRange )
+		{
+			isAdded	=	true;
+			break;
+		}
+	}
+
+	if( isAdded )
+		return;
+
+	enemyLocationsFromScans.push_back( P );
+	Broodwar->sendText( "Intresting location added <%i, %i>.", P.x(), P.y() );
 }
 
 void TerranStrategy::computeActions()
@@ -111,10 +143,12 @@ void TerranStrategy::computeActions()
 	int	gas		=	Broodwar->self()->gas();
 	int	seconds	=	Broodwar->getFrameCount();	//	Only if fastest
 
-
-	//	10 seconds intervall
-	if( seconds % (160 * 10) == 0 )
+	//	11 seconds intervall
+	if( seconds % (160 * 11) == 0 )
 	{
+		//	Radius for the sweep scan
+		float	sweepRadius	=	320;
+
 		for( int i = ComsatStations.size() - 1; i >= 0; --i )
 		{
 			Unit*	tComsat	=	ComsatStations[i];
@@ -137,12 +171,36 @@ void TerranStrategy::computeActions()
 			//	and still have 50 in case of invis units.
 			if( tComsat->getEnergy() >= 50 )
 			{
-				Position	basePos	=	getRandomScanLocation();
+				//	Fetch the next position to scan
+				Position	basePos	=	getNextScanPosition();
+
 				Broodwar->sendText( "Scanner Sweep incoming on <%i, %i>", basePos.x(), basePos.y() );
 
+				//	Cast the Sweep on the position
 				tComsat->useTech( TechTypes::Scanner_Sweep, basePos );
+
+				//	Loop through all units in the game, not very
+				//	performance effiencent but it was the only
+				//	way I found that would actually find units...
+				//	All others either returned 0, or only neutrals.
+				for(set<Unit*>::const_iterator i=Broodwar->getAllUnits().begin();i!=Broodwar->getAllUnits().end();i++)
+				{
+					Unit*	tUnit	=	(*i);
+
+					//	Check so the unit first of all
+					//	is an enemy and then so it is 
+					//	wihtin the scanning range. 
+					//	(sweepRadius is just a approximation)
+					if( tUnit->getPlayer()->isEnemy( Broodwar->self() ) )
+						if( tUnit->getPosition().getDistance( basePos ) < sweepRadius )
+						{
+							//	Enemies near the location
+							//	add it and break the unit iteration
+							addEnemyLocation( basePos );
+							break;
+						}
+				}
 			}
 		}
-
 	}
 }
