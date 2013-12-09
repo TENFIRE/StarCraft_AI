@@ -16,6 +16,7 @@ class TerranStrategy : public Commander {
 
 private:
 	Squad* mainSquad;
+	Squad* scoutSquad;
 	
 public:
 	TerranStrategy();

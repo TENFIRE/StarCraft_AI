@@ -12,7 +12,11 @@ using namespace std;
 class MarineAgent : public UnitAgent {
 
 private:
+	TilePosition realGoal;
+	TilePosition temporaryGoal;
+	bool isProMicroing;
 	
+	TilePosition computeProMicroGoal(Unit* closestUnit);
 public:
 	MarineAgent(Unit* mUnit);
 
