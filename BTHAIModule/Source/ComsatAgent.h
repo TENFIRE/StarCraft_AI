@@ -2,7 +2,7 @@
 #define __COMSATAGENT_H__
 
 #include "StructureAgent.h"
-using namespace BWAPI;
+;using namespace BWAPI;
 using namespace std;
 
 /** The ComsatAgent handles Terran Comsat Station buildings.

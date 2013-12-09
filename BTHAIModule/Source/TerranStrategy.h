@@ -12,12 +12,27 @@ using namespace std;
 /**  
  * Implement your Terran strategy here.
  */
-class TerranStrategy : public Commander {
+ struct LocationData
+ {
+	LocationData()
+	{
+		Location		=	Position(-1, -1);
+		Attractiveness	=	0;
+	}
+	Position	Location;
+	int			Attractiveness;
+ };
 
+class TerranStrategy : public Commander {
 private:
 	Squad* mainSquad;
-	Squad* scoutSquad;
-	
+	vector<Position>		positionsToScan;
+	vector<LocationData>	enemyLocationsFromScans;
+
+	void		addEnemyLocation( Position P, int Factor );
+	void		addPossibleScanLocations( void );
+	Position	getNextScanPosition( void );
+
 public:
 	TerranStrategy();
 
@@ -32,6 +47,9 @@ public:
 	{
 		return "TerranStrategy";
 	}
+
+	static	vector<Unit*>	CommandCenters;
+	static	vector<Unit*>	ComsatStations;
 };
 
 #endif

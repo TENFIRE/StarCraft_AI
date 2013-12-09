@@ -177,7 +177,7 @@ void Squad::debug_showGoal()
 	{
 		Position a = Position(goal.x()*32+16,goal.y()*32+16);
 		
-		Broodwar->drawCircleMap(a.x()-3, a.y()-3, 6, Colors::Grey, true);
+		Broodwar->drawCircleMap(a.x()-3, a.y()-3, 6, Colors::Yellow, true);
 		Broodwar->drawTextMap(a.x() - 20, a.y() - 5, "\x03SQ %d", id);
 	}
 }

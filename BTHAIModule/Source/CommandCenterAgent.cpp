@@ -2,6 +2,7 @@
 #include "Commander.h"
 #include "AgentManager.h"
 #include "Constructor.h"
+#include "TerranStrategy.h"
 
 CommandCenterAgent::CommandCenterAgent(Unit* mUnit)
 {
