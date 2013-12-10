@@ -30,34 +30,62 @@ void MarineAgent::computeActions()
 	}
 	
 	// Pro micro logic
-	Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
 	Squad* squad = Commander::getInstance()->getSquad(this->squadID);
-	if (closestUnit != NULL &&
-		this->unit->getGroundWeaponCooldown() > 0 &&
-		Position(closestUnit->getPosition().x() - this->getUnit()->getPosition().x(), closestUnit->getPosition().y() - this->getUnit()->getPosition().y()).getLength() < this->getGroundRange())
+	/*
+	if (isAttacking())
 	{
-		this->temporaryGoal = computeProMicroGoal(closestUnit);
 
-		if (this->temporaryGoal != TilePosition(-1, -1))
+		//attack
+		if (unit->getGroundWeaponCooldown() <= 0 && isProMicroing)
 		{
-			//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
-			Broodwar->setLocalSpeed(80);
-			setGoal(temporaryGoal);
-			isProMicroing = true;
-		}
-	}
-	else if (this->unit->getGroundWeaponCooldown() <= 0)
-	{
-		if (isProMicroing)
-		{
-			//if (closestUnit != NULL)
-			//	this->unit->attack(closestUnit);
-			//setGoal(squad->getGoal());
+			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
+
+			if (closestUnit != NULL)
+			{
+				this->unit->attack(closestUnit);
+			}
+			else
+			{
+				setGoal(squad->getGoal());
+			}
+			Broodwar->printf("attack!");
+			NavigationAgent::getInstance()->computeMove(this, goal, false);
 			isProMicroing = false;
+
+		}
+		//micro
+		else if (!isProMicroing)
+		{
+			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
+
+			if (closestUnit != NULL)
+			{
+				double length = (closestUnit->getPosition() - unit->getPosition()).getLength();
+
+				if (length < getGroundRange())
+				{
+					this->temporaryGoal = computeProMicroGoal(closestUnit);
+
+					if (this->temporaryGoal != TilePosition(-1, -1))
+					{
+						//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
+						Broodwar->setLocalSpeed(80);
+						setGoal(temporaryGoal);
+						Broodwar->printf("mirco!");
+						NavigationAgent::getInstance()->computeMove(this, goal, true);
+						isProMicroing = true;
+					}
+					else
+						Broodwar->printf("fail tilePos");
+				}
+				else
+					Broodwar->printf("im allready fine!");
+			}
+			else
+				Broodwar->printf("no unit");
 		}
 	}
-	
-	NavigationAgent::getInstance()->computeMove(this, goal, isProMicroing);	
+	*/
 
 	//Commander::getInstance()->getSquad(this->squadID);
 	//NavigationAgent::getInstance()->computeMove(this, goal, false);
@@ -65,15 +93,21 @@ void MarineAgent::computeActions()
 
 TilePosition MarineAgent::computeProMicroGoal(Unit* closestUnit)
 {
-	float distance = Position(this->unit->getPosition() - closestUnit->getPosition()).getLength();
-	float angle = atan2((float)this->unit->getPosition().y() - closestUnit->getPosition().y(), (float)this->unit->getPosition().x() - closestUnit->getPosition().x());
-	Position position = Position(this->unit->getPosition().x() + (this->unit->getPosition().x() - closestUnit->getPosition().x()) + cosf(angle) * (this->getGroundRange() - distance), this->unit->getPosition().y() + (this->unit->getPosition().y() - closestUnit->getPosition().y()) + sinf(angle) * (this->getGroundRange() - distance));
-	TilePosition tilePosition = TilePosition(position);
+	
+
+	Position tempP = this->unit->getPosition() - closestUnit->getPosition();
+	float distance = tempP.getLength();
+	float temp = getGroundRange() / distance;
+
+	tempP = Position(tempP.x() * temp, tempP.y() * temp);
+	tempP += unit->getPosition();
+
+	TilePosition tilePosition = TilePosition(tempP);
 	/*Broodwar->printf("Distance: %f, Angle: %f", distance, angle);
 	Broodwar->printf("Old Pos: %i, %i... New Pos: %i, %i", this->unit->getPosition().x(), this->unit->getPosition().y(), position.x(), position.y());
 	Broodwar->setLocalSpeed(80);*/
 	if (tilePosition.isValid())
 		return tilePosition;
 	else
-		return TilePosition(-1, -1);;
+		return TilePosition(-1, -1);
 }
