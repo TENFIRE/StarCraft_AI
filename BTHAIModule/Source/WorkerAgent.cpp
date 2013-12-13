@@ -423,6 +423,7 @@ bool WorkerAgent::assignToBuild(UnitType type)
 	}
 	else
 	{
+		toBuild = UnitTypes::None;
 		startSpot = TilePosition(-1, -1);
 		return false;
 	}
