@@ -47,15 +47,15 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Bunker, 10));
 
 	
-	Squad*	tSquad;
-	tSquad = new Squad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
-	tSquad->addSetup( UnitTypes::Terran_Marine, 10 );
+	RushSquad*	tSquad;
+	tSquad = new RushSquad(1, Squad::OFFENSIVE, "MarineSquad", 10);
+	tSquad->addSetup(UnitTypes::Terran_Marine, 20);
 	tSquad->setRequired( true );
 	tSquad->setBuildup( false );
 	tSquad->setGoal( findChokePoint() );
-	//tSquad->setBunkerMode( true );
+	tSquad->setBunkerMode( true );
 	squads.push_back( tSquad );
-	
+
 	enemyLocationsFromScans	=	vector<LocationData>();
 	positionsToScan			=	vector<Position>();
 	addPossibleScanLocations();
@@ -151,6 +151,7 @@ void TerranStrategy::computeActions()
 	int	min		=	Broodwar->self()->minerals();
 	int	gas		=	Broodwar->self()->gas();
 	int	seconds	=	Broodwar->getFrameCount();	//	Only if fastest
+
 
 	//	11 seconds intervall
 	if( seconds % (160 * 11) == 0 )
