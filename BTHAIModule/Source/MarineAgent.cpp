@@ -31,30 +31,35 @@ void MarineAgent::computeActions()
 	
 	// Pro micro logic
 	Squad* squad = Commander::getInstance()->getSquad(this->squadID);
-	/*
-	if (isAttacking())
+	
+	bool defensive = false;
+	// if the squad is attacking we check if we need to adjust the goal of the unit 	
+	if (squad->isAttacking())
 	{
-
-		//attack
-		if (unit->getGroundWeaponCooldown() <= 0 && isProMicroing)
+		/*
+			If the unit can shoot (no cooldown) we try to attack the 
+			closest target within the (groundrange * 1.5).
+			If we don't find an enemy we set the goal to the squadgoal
+		*/
+		if (unit->getGroundWeaponCooldown() <= 0/* && isProMicroing*/)
 		{
-			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
+			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange() * 1.5f);
 
 			if (closestUnit != NULL)
 			{
+				Broodwar->printf("attack closest");
 				this->unit->attack(closestUnit);
 			}
 			else
 			{
+				Broodwar->printf("squad goal!");
 				setGoal(squad->getGoal());
 			}
-			Broodwar->printf("attack!");
-			NavigationAgent::getInstance()->computeMove(this, goal, false);
-			isProMicroing = false;
-
 		}
-		//micro
-		else if (!isProMicroing)
+		/*
+			If the unit can't shoot we try to move away from the closest target, so we stand groundrange distance from them.
+		*/
+		else
 		{
 			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
 
@@ -69,23 +74,25 @@ void MarineAgent::computeActions()
 					if (this->temporaryGoal != TilePosition(-1, -1))
 					{
 						//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
-						Broodwar->setLocalSpeed(80);
+						//Broodwar->setLocalSpeed(80);
 						setGoal(temporaryGoal);
 						Broodwar->printf("mirco!");
-						NavigationAgent::getInstance()->computeMove(this, goal, true);
-						isProMicroing = true;
 					}
 					else
 						Broodwar->printf("fail tilePos");
 				}
 				else
-					Broodwar->printf("im allready fine!");
+					Broodwar->printf("im already fine!");
 			}
 			else
 				Broodwar->printf("no unit");
+
+			defensive = true;
 		}
 	}
-	*/
+
+	
+	NavigationAgent::getInstance()->computeMove(this, goal, defensive);
 
 	//Commander::getInstance()->getSquad(this->squadID);
 	//NavigationAgent::getInstance()->computeMove(this, goal, false);
@@ -93,8 +100,11 @@ void MarineAgent::computeActions()
 
 TilePosition MarineAgent::computeProMicroGoal(Unit* closestUnit)
 {
-	
-
+	/*
+		We are calculating a vector pointing from the target to this unit.
+		Then we adjust the length of the vector to the groundrange of the unit.
+		At last we calculate the goal by adding the vector to the current position.	
+	*/
 	Position tempP = this->unit->getPosition() - closestUnit->getPosition();
 	float distance = tempP.getLength();
 	float temp = getGroundRange() / distance;
