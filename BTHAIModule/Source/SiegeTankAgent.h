@@ -11,8 +11,13 @@ using namespace std;
  */
 class SiegeTankAgent : public UnitAgent {
 	
+	bool useSiegeMode;
+
+
 public:
 	SiegeTankAgent(Unit* mUnit);
+
+	void UseSiegeMode(bool value) { useSiegeMode = value; }
 
 	/** Called each update to issue orders. */
 	void computeActions();

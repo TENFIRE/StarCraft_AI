@@ -47,12 +47,12 @@ void MarineAgent::computeActions()
 
 			if (closestUnit != NULL)
 			{
-				Broodwar->printf("attack closest");
+				//Broodwar->printf("attack closest");
 				this->unit->attack(closestUnit);
 			}
 			else
 			{
-				Broodwar->printf("squad goal!");
+				//Broodwar->printf("squad goal!");
 				setGoal(squad->getGoal());
 			}
 		}
@@ -76,15 +76,15 @@ void MarineAgent::computeActions()
 						//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
 						//Broodwar->setLocalSpeed(80);
 						setGoal(temporaryGoal);
-						Broodwar->printf("mirco!");
+						//Broodwar->printf("mirco!");
 					}
-					else
-						Broodwar->printf("fail tilePos");
+				//	else
+					//	Broodwar->printf("fail tilePos");
 				}
-				else
-					Broodwar->printf("im already fine!");
+			//	else
+			//		Broodwar->printf("im already fine!");
 			}
-			else
+			//else
 				Broodwar->printf("no unit");
 
 			defensive = true;

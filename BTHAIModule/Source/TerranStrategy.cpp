@@ -14,7 +14,7 @@ vector<Unit*>	TerranStrategy::ComsatStations	=	vector<Unit*>();
 
 TerranStrategy::TerranStrategy()
 {
-Broodwar->enableFlag( Flag::CompleteMapInformation );
+	Broodwar->enableFlag( Flag::CompleteMapInformation );
 	// Supply Depots
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 9));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 11));
@@ -27,12 +27,22 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 53));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 60));
 
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Refinery, 10));
+
 	//	Barracks
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 8));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 10));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 12));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 14));
+	//buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 14));
 
+
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Factory, 14));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Machine_Shop, 16));
+	buildplan.push_back(BuildplanEntry(TechTypes::Tank_Siege_Mode, 18));
+
+
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Starport, 22));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Control_Tower, 24));
 
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Engineering_Bay, 18));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Refinery, 20));
@@ -49,12 +59,22 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	
 	RushSquad*	tSquad;
 	tSquad = new RushSquad(1, Squad::OFFENSIVE, "MarineSquad", 10);
-	tSquad->addSetup(UnitTypes::Terran_Marine, 20);
+	tSquad->addSetup(UnitTypes::Terran_Marine, 15);
+	tSquad->addSetup(UnitTypes::Terran_Medic, 5);
 	tSquad->setRequired( true );
 	tSquad->setBuildup( false );
 	tSquad->setGoal( findChokePoint() );
 	tSquad->setBunkerMode( true );
 	squads.push_back( tSquad );
+
+	Squad*	sq2;
+	sq2 = new Squad(2, Squad::OFFENSIVE, "TankSquad", 10);
+	sq2->addSetup(UnitTypes::Terran_Siege_Tank_Tank_Mode, 2);
+	//sq2->addSetup(UnitTypes::Terran_Dropship, 1);
+	sq2->setRequired(true);
+	sq2->setBuildup(false);
+	sq2->setGoal(findChokePoint());
+	squads.push_back(sq2);
 
 	enemyLocationsFromScans	=	vector<LocationData>();
 	positionsToScan			=	vector<Position>();
