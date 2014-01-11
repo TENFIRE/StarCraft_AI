@@ -19,8 +19,8 @@ MarineAgent::MarineAgent(Unit* mUnit)
 void MarineAgent::computeActions()
 {
 	//	Stim pack logic
-	if( unit->isAttacking() && unit->getStimTimer() <= 0 )
-		unit->useTech( TechTypes::Stim_Packs );
+	if (unit->isAttacking() && unit->getStimTimer() <= 0)
+		unit->useTech(TechTypes::Stim_Packs);
 
 	// Cloaked unit scanning logic
 	if (unit->getTarget() != NULL && unit->getTarget()->isCloaked() && !unit->getTarget()->isVisible())
