@@ -15,6 +15,7 @@ class WorkerAgent : public BaseAgent {
 
 private:
 	int currentState;
+	int lastState;
 
 	UnitType toBuild;
 	TilePosition buildSpot;

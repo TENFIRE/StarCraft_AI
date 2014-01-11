@@ -5,6 +5,7 @@
 #include "BuildingPlacer.h"
 #include "ExplorationManager.h"
 #include "RushSquad.h"
+#include "DistractionSquad.h"
 #include "ComsatAgent.h"
 #include "CommandCenterAgent.h"
 
@@ -15,11 +16,16 @@ vector<Unit*>	TerranStrategy::ComsatStations	=	vector<Unit*>();
 TerranStrategy::TerranStrategy()
 {
 Broodwar->enableFlag( Flag::CompleteMapInformation );
+
+	// Start
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 8));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 10));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Bunker, 11));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 13));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 14));
+
 	// Supply Depots
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 9));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 11));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 13));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 20));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 15));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 28));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 34));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 40));
@@ -27,29 +33,28 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 53));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Supply_Depot, 60));
 
-	//	Barracks
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 8));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 10));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 12));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 14));
+	// Whenever possible after start (in order)
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Refinery, 15));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Barracks, 15));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Academy, 15));
+	buildplan.push_back(BuildplanEntry(TechTypes::Stim_Packs, 15));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Engineering_Bay, 15));
+	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Weapons, 15));
+	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Armor, 15));
+	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 15));
 
 
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Engineering_Bay, 18));
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Refinery, 20));
-	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Weapons, 22));
-	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Armor, 24));
-
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Academy, 25));
-	buildplan.push_back(BuildplanEntry(TechTypes::Stim_Packs, 30));
-
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 28));
-
-	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Bunker, 10));
-
+	mainSquad = new DistractionSquad(1, Squad::OFFENSIVE, "DistractionSquad", 5);
+	mainSquad->addSetup(UnitTypes::Terran_Marine, 2);
+	mainSquad->setRequired(true);
+	mainSquad->setBuildup(false);
+	mainSquad->setGoal(findChokePoint());
+	squads.push_back(mainSquad);
 	
 	RushSquad*	tSquad;
-	tSquad = new RushSquad( 1, Squad::OFFENSIVE, "MarineSquad", 10 );
-	tSquad->addSetup( UnitTypes::Terran_Marine, 10 );
+	tSquad = new RushSquad( 2, Squad::OFFENSIVE, "MarineSquad", 10 );
+	tSquad->addSetup( UnitTypes::Terran_Marine, 15 );
+	tSquad->addSetup(UnitTypes::Terran_Medic, 5);
 	tSquad->setRequired( true );
 	tSquad->setBuildup( false );
 	tSquad->setGoal( findChokePoint() );
