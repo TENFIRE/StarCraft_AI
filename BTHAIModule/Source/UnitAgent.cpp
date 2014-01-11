@@ -4,6 +4,7 @@
 #include "AgentManager.h"
 #include "ExplorationManager.h"
 #include <sstream>
+#include <limits>
 
 UnitAgent::UnitAgent()
 {
@@ -306,7 +307,7 @@ int UnitAgent::enemyAttackingUnitsWithinRange(UnitType type)
 Unit* UnitAgent::getClosestOrganicEnemy(int maxRange)
 {
 	Unit* enemy = NULL;
-	double bestDist = -1;
+	double bestDist = DBL_MAX;
 
 	for(set<Unit*>::const_iterator i=Broodwar->enemy()->getUnits().begin();i!=Broodwar->enemy()->getUnits().end();i++)
 	{
@@ -315,7 +316,7 @@ Unit* UnitAgent::getClosestOrganicEnemy(int maxRange)
 			if ((*i)->getType().isOrganic() && !(*i)->getType().isBuilding())
 			{
 				double cDist = unit->getDistance((*i));
-				if (bestDist < 0 || cDist < bestDist)
+				if (cDist < bestDist && cDist <= maxRange)
 				{
 					bestDist = cDist;
 					enemy = (*i);
