@@ -43,14 +43,15 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	buildplan.push_back(BuildplanEntry(UpgradeTypes::Terran_Infantry_Armor, 15));
 	buildplan.push_back(BuildplanEntry(UnitTypes::Terran_Comsat_Station, 15));
 
-
+	/*
 	mainSquad = new DistractionSquad(1, Squad::OFFENSIVE, "DistractionSquad", 5);
 	mainSquad->addSetup(UnitTypes::Terran_Marine, 2);
 	mainSquad->setRequired(true);
 	mainSquad->setBuildup(false);
 	mainSquad->setGoal(findChokePoint());
 	squads.push_back(mainSquad);
-	
+	*/
+	/*
 	RushSquad*	tSquad;
 	tSquad = new RushSquad( 2, Squad::OFFENSIVE, "MarineSquad", 10 );
 	tSquad->addSetup( UnitTypes::Terran_Marine, 15 );
@@ -60,7 +61,7 @@ Broodwar->enableFlag( Flag::CompleteMapInformation );
 	tSquad->setGoal( findChokePoint() );
 	tSquad->setBunkerMode( true );
 	squads.push_back( tSquad );
-	
+	*/
 	enemyLocationsFromScans	=	vector<LocationData>();
 	positionsToScan			=	vector<Position>();
 	addPossibleScanLocations();
