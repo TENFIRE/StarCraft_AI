@@ -32,32 +32,67 @@ void MarineAgent::computeActions()
 	// Pro micro logic
 	Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
 	Squad* squad = Commander::getInstance()->getSquad(this->squadID);
-	if (closestUnit != NULL &&
-		this->unit->getGroundWeaponCooldown() > 0 &&
-		Position(closestUnit->getPosition().x() - this->getUnit()->getPosition().x(), closestUnit->getPosition().y() - this->getUnit()->getPosition().y()).getLength() < this->getGroundRange())
-	{
-		this->temporaryGoal = computeProMicroGoal(closestUnit);
 
-		if (this->temporaryGoal != TilePosition(-1, -1))
-		{
-			//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
-			Broodwar->setLocalSpeed(80);
-			setGoal(temporaryGoal);
-			isProMicroing = true;
-		}
-	}
-	else if (this->unit->getGroundWeaponCooldown() <= 0)
+	bool defensive = false;
+	// if the squad is attacking we check if we need to adjust the goal of the unit 	
+	if (squad->isAttacking())
 	{
-		if (isProMicroing)
+		/*
+		If the unit can shoot (no cooldown) we try to attack the
+		closest target within the (groundrange * 1.5).
+		If we don't find an enemy we set the goal to the squadgoal
+		*/
+		if (unit->getGroundWeaponCooldown() <= 0/* && isProMicroing*/)
 		{
-			//if (closestUnit != NULL)
-			//	this->unit->attack(closestUnit);
-			//setGoal(squad->getGoal());
-			isProMicroing = false;
+			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange() * 1.5f);
+
+			if (closestUnit != NULL)
+			{
+				//Broodwar->printf("attack closest");
+				this->unit->attack(closestUnit);
+			}
+			else
+			{
+				//Broodwar->printf("squad goal!");
+				setGoal(squad->getGoal());
+			}
+		}
+		/*
+		If the unit can't shoot we try to move away from the closest target, so we stand groundrange distance from them.
+		*/
+		else
+		{
+			Unit* closestUnit = getClosestOrganicEnemy(this->getGroundRange());
+
+			if (closestUnit != NULL)
+			{
+				double length = (closestUnit->getPosition() - unit->getPosition()).getLength();
+
+				if (length < getGroundRange())
+				{
+					this->temporaryGoal = computeProMicroGoal(closestUnit);
+
+					if (this->temporaryGoal != TilePosition(-1, -1))
+					{
+						//Broodwar->printf("TilePos: %i, %i", temporaryGoal.x(), temporaryGoal.y());
+						//Broodwar->setLocalSpeed(80);
+						setGoal(temporaryGoal);
+						//Broodwar->printf("mirco!");
+					}
+					//	else
+					//	Broodwar->printf("fail tilePos");
+				}
+				//	else
+				//		Broodwar->printf("im already fine!");
+			}
+			//else
+			Broodwar->printf("no unit");
+
+			defensive = true;
 		}
 	}
 	
-	NavigationAgent::getInstance()->computeMove(this, goal, isProMicroing);	
+	NavigationAgent::getInstance()->computeMove(this, goal, defensive);
 
 	//Commander::getInstance()->getSquad(this->squadID);
 	//NavigationAgent::getInstance()->computeMove(this, goal, false);
@@ -65,15 +100,26 @@ void MarineAgent::computeActions()
 
 TilePosition MarineAgent::computeProMicroGoal(Unit* closestUnit)
 {
-	float distance = Position(this->unit->getPosition() - closestUnit->getPosition()).getLength();
-	float angle = atan2((float)this->unit->getPosition().y() - closestUnit->getPosition().y(), (float)this->unit->getPosition().x() - closestUnit->getPosition().x());
-	Position position = Position(this->unit->getPosition().x() + (this->unit->getPosition().x() - closestUnit->getPosition().x()) + cosf(angle) * (this->getGroundRange() - distance), this->unit->getPosition().y() + (this->unit->getPosition().y() - closestUnit->getPosition().y()) + sinf(angle) * (this->getGroundRange() - distance));
-	TilePosition tilePosition = TilePosition(position);
+	/*
+	We are calculating a vector pointing from the target to this unit.
+	Then we adjust the length of the vector to the groundrange of the unit.
+	At last we calculate the goal by adding the vector to the current position.
+	*/
+	Position tempP = this->unit->getPosition() - closestUnit->getPosition();
+	float distance = tempP.getLength();
+	float temp = getGroundRange() / distance;
+
+	tempP = Position(tempP.x() * temp, tempP.y() * temp);
+	tempP += unit->getPosition();
+
+	TilePosition tilePosition = TilePosition(tempP);
+
+
 	/*Broodwar->printf("Distance: %f, Angle: %f", distance, angle);
 	Broodwar->printf("Old Pos: %i, %i... New Pos: %i, %i", this->unit->getPosition().x(), this->unit->getPosition().y(), position.x(), position.y());
 	Broodwar->setLocalSpeed(80);*/
 	if (tilePosition.isValid())
 		return tilePosition;
 	else
-		return TilePosition(-1, -1);;
+		return TilePosition(-1, -1);
 }
