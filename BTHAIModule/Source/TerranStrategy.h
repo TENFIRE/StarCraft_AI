@@ -32,6 +32,8 @@ private:
 	void		addEnemyLocation( Position P, int Factor );
 	void		addPossibleScanLocations( void );
 	Position	getNextScanPosition( void );
+	Position	getEnemyLocationFromScans( void );
+	void		deployNewSquad( void );
 
 public:
 	TerranStrategy();
